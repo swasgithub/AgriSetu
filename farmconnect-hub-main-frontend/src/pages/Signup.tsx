@@ -13,8 +13,10 @@ const Signup = () => {
     name: "",
     email: "",
     phone: "",
-    location: "",
+    village: "",
+    district: "",
     password: "",
+    role: "farmer"
   });
   const { toast } = useToast();
 
@@ -22,51 +24,49 @@ const Signup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-const handleSignup = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  try {
-    const response = await fetch("http://localhost:5000/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      }),
-    });
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+
+      toast({
+        title: "Signup Successful",
+        description: "You can now log in 🎉",
+      });
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        village: "",
+        district: "",
+        password: "",
+        role: "farmer"
+      });
+
+      // optionally redirect
+      // navigate("/login");
+
+
+    } catch (error: any) {
+      toast({
+        title: "Signup Failed",
+        description: error.message || "Something went wrong",
+        variant: "destructive",
+      });
     }
-
-    toast({
-      title: "Signup Successful",
-      description: "You can now log in 🎉",
-    });
-    setFormData({
-  name: "",
-  email: "",
-  phone: "",
-  location: "",
-  password: "",
-});
-
-// optionally redirect
-// navigate("/login");
-
-
-  } catch (error: any) {
-    toast({
-      title: "Signup Failed",
-      description: error.message || "Something went wrong",
-      variant: "destructive",
-    });
-  }
-};
+  };
 
 
   return (
@@ -141,20 +141,55 @@ const handleSignup = async (e: React.FormEvent) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Village / District</Label>
+                <Label htmlFor="village">Village</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
-                    id="location"
-                    name="location"
+                    id="village"
+                    name="village"
                     type="text"
-                    placeholder="Jaipur, Rajasthan"
-                    value={formData.location}
+                    placeholder="Jaipur"
+                    value={formData.village}
                     onChange={handleChange}
                     className="pl-10"
                     required
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="district">District</Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="district"
+                    name="district"
+                    type="text"
+                    placeholder="Rajasthan"
+                    value={formData.district}
+                    onChange={handleChange}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="role">Select Role</Label>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={(e) =>
+                    setFormData({ ...formData, role: e.target.value })
+                  }
+                  className="w-full border border-input rounded-md px-3 py-2 bg-background"
+                  required
+                >
+                  <option value="farmer">Farmer</option>
+                  <option value="supplier">Supplier (Sell products)</option>
+                  <option value="equipment_owner">Equipment Owner (Rent machines)</option>
+                </select>
               </div>
 
               <div className="space-y-2">

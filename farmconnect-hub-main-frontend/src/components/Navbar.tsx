@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sprout, ShoppingCart, Tractor, Bot, User } from "lucide-react";
+import { Menu, X, Sprout, ShoppingCart, Tractor, Bot, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 
@@ -23,6 +23,10 @@ const Navbar = () => {
     { path: "/rent", label: "Rent Machinery", icon: Tractor },
     { path: "/consult", label: "AI Consult", icon: Bot },
   ];
+
+  if (user?.role === "farmer") {
+    navLinks.push({ path: "/dashboard/farmer", label: "Dashboard", icon: LayoutDashboard });
+  }
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -59,6 +63,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-2">
             {user ? (
               <>
+                
                 <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-muted">
                   <User className="w-4 h-4" />
                   <span className="text-sm font-medium">{user.name}</span>
@@ -112,14 +117,30 @@ const Navbar = () => {
                   <span className="font-medium">{link.label}</span>
                 </Link>
               ))}
-              <div className="flex gap-2 mt-4 pt-4 border-t border-border">
-                <Link to="/login" className="flex-1" onClick={() => setIsOpen(false)}>
-                  <Button variant="outline" className="w-full">Login</Button>
-                </Link>
-                <Link to="/signup" className="flex-1" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full">Sign Up</Button>
-                </Link>
-              </div>
+              {user ? (
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
+                  {user.role === "farmer" && (
+                    <Link to="/dashboard/farmer" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full gap-2">
+                        <LayoutDashboard className="w-4 h-4" />
+                        Dashboard
+                      </Button>
+                    </Link>
+                  )}
+                  <Button variant="outline" className="w-full" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2 mt-4 pt-4 border-t border-border">
+                  <Link to="/login" className="flex-1" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" className="w-full">Login</Button>
+                  </Link>
+                  <Link to="/signup" className="flex-1" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full">Sign Up</Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}

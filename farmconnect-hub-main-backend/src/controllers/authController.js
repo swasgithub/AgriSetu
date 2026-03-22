@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 // SIGNUP
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone, village, district, role } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -22,7 +22,11 @@ export const registerUser = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      phone,
+      village,
+      district,
+      role
     });
 
     const token = jwt.sign(
@@ -38,7 +42,12 @@ export const registerUser = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        phone: user.phone,
+        village: user.village,
+        district: user.district,
+        role : user.role
+
       }
     });
 
@@ -75,6 +84,10 @@ export const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
+        village: user.village,
+        district: user.district,
+        role: user.role,
       },
     });
   } catch (error) {
