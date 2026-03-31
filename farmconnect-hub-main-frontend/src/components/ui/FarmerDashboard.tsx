@@ -23,8 +23,10 @@ const FarmerDashboard = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
+  const [rents, setRents] = useState([])
+  const [products, setProducts] = useState([]);
+  const [machines, setMachines] = useState([]);
 
-  // ✅ Fetch user from MongoDB
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -60,10 +62,42 @@ const FarmerDashboard = () => {
         console.log("Orders fetch error:", error.message);
       }
     };
+    const fetchRentals = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const { data } = await axios.get("/api/rentals/my", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setRents(data);
+      } catch (error) {
+        console.log("Rentals fetch error:", error.message);
+      }
+    };
+    const fetchProducts = async () => {
+      const { data } = await axios.get("/api/products");
+      setProducts(data);
+    };
+
+    const fetchMachines = async () => {
+      const { data } = await axios.get("/api/machines");
+      setMachines(data);
+    };
 
     fetchUser();
     fetchOrders();
+    fetchRentals();
+    fetchProducts();
+    fetchMachines();
   }, []);
+
+
+
+
+
 
   // Handle loading
   if (loading) {
@@ -112,6 +146,12 @@ const FarmerDashboard = () => {
       value: orders.length,
       icon: Package,
       helper: "Orders placed",
+    },
+    {
+      label: "Your Rentals",
+      value: rents.length,
+      icon: Tractor,
+      helper: "Machines rented",
     }
   ];
 
@@ -196,6 +236,15 @@ const FarmerDashboard = () => {
                         {orders.slice(0, 2).map((order) => (
                           <p key={order._id} className="text-xs text-muted-foreground">
                             Rs {order.totalAmount}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                    {item.label === "Your Rentals" && rents.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {rents.slice(0, 2).map((rent) => (
+                          <p key={rent._id} className="text-xs text-muted-foreground">
+                            {rent.machine?.name} ({rent.totalDays} days)
                           </p>
                         ))}
                       </div>
@@ -379,15 +428,7 @@ const FarmerDashboard = () => {
               <CardTitle>Platform Status</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-lg border p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Package className="w-4 h-4 text-primary" />
-                  <p className="font-medium">Orders API</p>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Connected to `/api/orders/my` (no data yet).
-                </p>
-              </div>
+
 
               <div className="rounded-lg border p-4">
                 <div className="flex items-center gap-2 mb-2">

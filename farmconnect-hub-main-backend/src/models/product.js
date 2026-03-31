@@ -6,10 +6,40 @@ const productSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   },
-  name: String,
-  description: String,
-  price: Number,
-  category: String,
+ name: {
+      type: String,
+      required: true,
+    },
+
+    category: {
+      type: String,
+      required: true,
+      enum: ["Seeds", "Fertilizer", "Pesticide", "Tools"],
+    },
+
+    description: {
+      type: String,
+    },
+
+    price: {
+      type: Number,
+      required: true,
+    },
+
+    image: {
+      type: String,
+      default: "https://via.placeholder.com/300x200?text=No+Image",
+    },
+
+    unit: {
+      type: String,
+      default: "unit", // kg, bag, liter etc
+    },
+
+    rating: {
+      type: Number,
+      default: 4.0,
+    },
   
 }, { timestamps: true });
 

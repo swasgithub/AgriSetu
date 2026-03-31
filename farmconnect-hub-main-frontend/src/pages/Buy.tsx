@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Search, ShoppingCart, Star, Plus } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -14,12 +16,13 @@ const Buy = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [cart, setCart] = useState([]);
-  const [products, setProducts] = useState([]); //  real products
+  const [products, setProducts] = useState([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const categories = ["All", "Seeds", "Fertilizer", "Pesticide", "Tool"];
+  const categories = ["All", "Seeds", "Fertilizer", "Pesticide", "Tools"];
 
-  //  Fetch products from backend
+  // ✅ Fetch products + load cart
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -31,9 +34,13 @@ const Buy = () => {
     };
 
     fetchProducts();
+
+    // ✅ Load cart from localStorage
+    const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCart(storedCart);
   }, []);
 
-  //  Filter logic
+  // ✅ Filter logic
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
       ?.toLowerCase()
@@ -45,16 +52,28 @@ const Buy = () => {
     return matchesSearch && matchesCategory;
   });
 
-  // (optional local cart)
-  const addToCart = (productId, productName) => {
-    setCart([...cart, productId]);
+  // ✅ ADD TO CART
+  const addToCart = (product) => {
+    let cartData = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    const existing = cartData.find((item) => item._id === product._id);
+
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cartData.push({ ...product, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cartData));
+    setCart([...cartData]); // refresh UI
+
     toast({
       title: "Added to Cart",
-      description: `${productName} has been added to your cart.`,
+      description: `${product.name} added successfully`,
     });
   };
 
-  // REAL BUY FUNCTION (creates order)
+  // ✅ BUY FUNCTION (UNCHANGED)
   const handleBuy = async (product) => {
     try {
       const token = localStorage.getItem("token");
@@ -107,8 +126,11 @@ const Buy = () => {
 
       <main className="flex-1 py-8">
         <div className="container mx-auto px-4">
+
           {/* Filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-8">
+
+            {/* Search */}
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
@@ -119,6 +141,7 @@ const Buy = () => {
               />
             </div>
 
+            {/* Categories */}
             <div className="flex gap-2 flex-wrap">
               {categories.map((category) => (
                 <Button
@@ -132,19 +155,23 @@ const Buy = () => {
               ))}
             </div>
 
-            {cart.length > 0 && (
-              <Button variant="outline" className="gap-2">
-                <ShoppingCart className="w-4 h-4" />
-                Cart ({cart.length})
-              </Button>
-            )}
+            {/* Cart Button */}
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => navigate("/cart")}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              Cart ({cart.length})
+            </Button>
+
           </div>
 
           {/* Products Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <Card
-                key={product._id} 
+                key={product._id}
                 className="overflow-hidden hover:shadow-lg transition-shadow group"
               >
                 {/* Image */}
@@ -178,6 +205,7 @@ const Buy = () => {
                     </span>
                   </div>
 
+                  {/* Price + Buttons */}
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-xl font-bold text-primary">
@@ -188,21 +216,33 @@ const Buy = () => {
                       </span>
                     </div>
 
-                    {/*  BUY BUTTON */}
-                    <Button
-                      size="sm"
-                      className="gap-1"
-                      onClick={() => handleBuy(product)}
-                    >
-                      <Plus className="w-4 h-4" />
-                      Buy
-                    </Button>
+                    <div className="flex gap-2">
+                      {/* ADD */}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => addToCart(product)}
+                      >
+                        Add
+                      </Button>
+
+                      {/* BUY */}
+                      <Button
+                        size="sm"
+                        className="gap-1"
+                        onClick={() => handleBuy(product)}
+                      >
+                        <Plus className="w-4 h-4" />
+                        Buy
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
 
+          {/* No Products */}
           {filteredProducts.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
@@ -210,6 +250,7 @@ const Buy = () => {
               </p>
             </div>
           )}
+
         </div>
       </main>
 

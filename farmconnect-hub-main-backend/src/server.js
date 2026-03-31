@@ -6,6 +6,9 @@ import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js"
+import machineRoutes from "./routes/machineRoutes.js";
+import rentRoutes from "./routes/rentRoutes.js";
+
 
 dotenv.config();
 
@@ -20,6 +23,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/machines", machineRoutes);
+app.use("/api/rentals", rentRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");

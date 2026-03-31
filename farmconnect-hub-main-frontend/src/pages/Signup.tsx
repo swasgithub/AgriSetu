@@ -187,8 +187,8 @@ const Signup = () => {
                   required
                 >
                   <option value="farmer">Farmer</option>
-                  <option value="supplier">Supplier (Sell products)</option>
-                  <option value="equipment_owner">Equipment Owner (Rent machines)</option>
+                  <option value="supplier">Supplier</option>
+                  <option value="equipment_owner">Equipment Owner</option>
                 </select>
               </div>
 
