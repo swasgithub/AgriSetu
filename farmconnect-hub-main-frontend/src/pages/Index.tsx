@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { stats } from "@/data/demoData";
-
+import { API_URL } from "@/config/api";
 const Index = () => {
   const features = [
     {

@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-
+import { API_URL } from "@/config/api";
 const OwnerDashboard = () => {
     const { toast } = useToast();
     const [user, setUser] = useState(() => {
@@ -33,15 +33,15 @@ const OwnerDashboard = () => {
     const fetchData = async () => {
         const token = localStorage.getItem("token");
         try {
-            const { data: userData } = await axios.get("/api/users/me", {
+            const { data: userData } = await axios.get(`${API_URL}/api/users/me`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const { data: machineData } = await axios.get("/api/machines/my", {
+            const { data: machineData } = await axios.get(`${API_URL}/api/machines/my`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const { data: rentalData } = await axios.get("/api/rentals/owner", {
+            const { data: rentalData } = await axios.get(`${API_URL}/api/rentals/owner`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -62,7 +62,7 @@ const OwnerDashboard = () => {
     const handleUpdateStatus = async (rentalId, newStatus) => {
         try {
             const token = localStorage.getItem("token");
-            await axios.put(`/api/rentals/${rentalId}/status`, 
+            await axios.put(`${API_URL}/api/rentals/${rentalId}/status`, 
                 { status: newStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

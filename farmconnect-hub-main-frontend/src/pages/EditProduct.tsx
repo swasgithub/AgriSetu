@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
-
+import { API_URL } from "@/config/api";
 const EditProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ const EditProduct = () => {
         const fetchProduct = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const { data } = await axios.get(`/api/products/${id}`, {
+                const { data } = await axios.get(`${API_URL}/api/products/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 

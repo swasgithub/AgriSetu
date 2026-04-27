@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
+import { API_URL } from "@/config/api";
 const Cart = () => {
     const [cart, setCart] = useState([]);
     const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Cart = () => {
 
     //  Checkout
     const handleCheckout = () => {
-        navigate("/checkout", {
+        navigate(`${API_URL}/checkout`, {
             state: {
                 items: cart.map((item) => ({
                     product: item._id,

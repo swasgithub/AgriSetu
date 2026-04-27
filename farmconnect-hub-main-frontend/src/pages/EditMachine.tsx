@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
-
+import { API_URL } from "@/config/api";
 const EditMachine = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -32,7 +32,7 @@ const EditMachine = () => {
         const fetchMachine = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const { data } = await axios.get(`/api/machines/${id}`, {
+                const { data } = await axios.get(`${API_URL}/api/machines/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 
@@ -83,7 +83,7 @@ const EditMachine = () => {
         try {
             const token = localStorage.getItem("token");
 
-            await axios.put(`/api/machines/${id}`, form, {
+            await axios.put(`${API_URL}/api/machines/${id}`, form, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

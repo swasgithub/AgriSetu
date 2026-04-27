@@ -22,6 +22,9 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -41,9 +44,6 @@ app.use((req, res) => {
 });
 
 
-app.get("/", (req, res) => {
-  res.send("Backend is running 🚀");
-});
 
 const PORT = process.env.PORT || 5000;
 

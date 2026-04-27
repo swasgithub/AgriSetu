@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-
+import { API_URL } from "@/config/api";
 const Checkout = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -46,7 +46,7 @@ const Checkout = () => {
                 paymentMethod
             };
 
-            await axios.post("/api/orders", orderData, {
+            await axios.post(`${API_URL}/api/orders`, orderData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { agents} from "@/data/demoData";
 
-
+import { API_URL } from "@/config/api";
 
 const FarmerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -32,7 +32,7 @@ const FarmerDashboard = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const { data } = await axios.get("/api/users/me", {
+        const { data } = await axios.get(`${API_URL}/api/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,7 +50,7 @@ const FarmerDashboard = () => {
     };
        const fetchOrders = async () => {
         const token = localStorage.getItem("token");
-      const { data } = await axios.get("/api/orders/my", {
+      const { data } = await axios.get(`${API_URL}/api/orders/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
      
@@ -58,18 +58,18 @@ const FarmerDashboard = () => {
     };
     const fetchRentals = async () => {
       const token = localStorage.getItem("token");
-      const { data } = await axios.get("/api/rentals/my", {
+      const { data } = await axios.get(`${API_URL}/api/rentals/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRents(data);
     };
     const fetchProducts = async () => {
-      const { data } = await axios.get("/api/products");
+      const { data } = await axios.get(`${API_URL}/api/products`);
       setProducts(data);
     };
 
     const fetchMachines = async () => {
-      const { data } = await axios.get("/api/machines");
+      const { data } = await axios.get(`${API_URL}/api/machines`);
       setMachines(data);
     };
 

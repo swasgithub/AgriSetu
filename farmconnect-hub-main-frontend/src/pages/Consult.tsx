@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { agents } from "@/data/demoData";
-
+import { API_URL } from "@/config/api";
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Leaf,
   Bug,

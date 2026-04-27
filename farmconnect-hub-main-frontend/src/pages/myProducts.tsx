@@ -13,7 +13,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-
+import { API_URL } from "@/config/api";
 const MyProducts = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ const MyProducts = () => {
     const fetchProducts = async () => {
         try {
             const token = localStorage.getItem("token");
-            const { data } = await axios.get("/api/products/my", {
+            const { data } = await axios.get(`${API_URL}/api/products/my`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setProducts(data);
@@ -42,7 +42,7 @@ const MyProducts = () => {
         
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`/api/products/${id}`, {
+            await axios.delete(`${API_URL}/api/products/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

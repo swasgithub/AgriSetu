@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
+import { API_URL } from "@/config/api";
 const Buy = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -26,7 +26,7 @@ const Buy = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await axios.get("/api/products");
+        const { data } = await axios.get(`${API_URL}/api/products`);
         setProducts(data);
       } catch (error) {
         console.log("Error fetching products:", error);

@@ -18,7 +18,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
+import { API_URL } from "@/config/api";
 const SupplierDashboard = () => {
     const [user, setUser] = useState(() => {
         return JSON.parse(localStorage.getItem("user"));
@@ -32,15 +32,15 @@ const SupplierDashboard = () => {
 
         const fetchData = async () => {
             try {
-                const { data: userData } = await axios.get("/api/users/me", {
+                const { data: userData } = await axios.get(`${API_URL}/api/users/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                const { data: productData } = await axios.get("/api/products/my", {
+                const { data: productData } = await axios.get(`${API_URL}/api/products/my`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                const { data: orderData } = await axios.get("/api/orders/supplier", {
+                const { data: orderData } = await axios.get(`${API_URL}/api/orders/supplier`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 

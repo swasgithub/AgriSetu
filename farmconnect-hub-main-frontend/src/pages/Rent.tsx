@@ -9,7 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { machines } from "@/data/demoData";
 import axios from "axios";
-
+import { API_URL } from "@/config/api";
 const Rent = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("All");
@@ -21,7 +21,7 @@ const Rent = () => {
   useEffect(() => {
     const fetchMachines = async () => {
       try {
-        const { data } = await axios.get("/api/machines");
+        const { data } = await axios.get(`${API_URL}/api/machines`);
         setMachines(data);
       } catch (error) {
         console.log("FETCH MACHINE ERROR:", error);
@@ -47,7 +47,7 @@ const Rent = () => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "/api/rentals",
+        `${API_URL}/api/rentals`,
         {
           machineId: machine._id,
           startDate: new Date(),

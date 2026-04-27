@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-
+import { API_URL } from "@/config/api";
 const AddMachine = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
@@ -46,7 +46,7 @@ const AddMachine = () => {
         try {
             const token = localStorage.getItem("token");
 
-            await axios.post("/api/machines", form, {
+            await axios.post(`${API_URL}/api/machines`, form, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

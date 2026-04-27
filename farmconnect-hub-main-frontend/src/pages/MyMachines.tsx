@@ -13,7 +13,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-
+import { API_URL } from "@/config/api";
 const MyMachines = () => {
     const [machines, setMachines] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ const MyMachines = () => {
     const fetchMachines = async () => {
         try {
             const token = localStorage.getItem("token");
-            const { data } = await axios.get("/api/machines/my", {
+            const { data } = await axios.get(`${API_URL}/api/machines/my`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setMachines(data);
@@ -40,7 +40,7 @@ const MyMachines = () => {
     const toggleAvailability = async (id, currentStatus) => {
         try {
             const token = localStorage.getItem("token");
-            await axios.put(`/api/machines/${id}`, 
+            await axios.put(`${API_URL}/api/machines/${id}`, 
                 { available: !currentStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -65,7 +65,7 @@ const MyMachines = () => {
         
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`/api/machines/${id}`, {
+            await axios.delete(`${API_URL}/api/machines/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
