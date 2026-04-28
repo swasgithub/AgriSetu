@@ -11,12 +11,12 @@ import {
   Tractor,
   User,
 } from "lucide-react";
+import { Leaf, Cloud, Bug, Droplets, TrendingUp, Shield } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { agents} from "@/data/demoData";
-
+import { useNavigate } from "react-router-dom";
 import { API_URL } from "@/config/api";
 
 const FarmerDashboard = () => {
@@ -26,7 +26,43 @@ const FarmerDashboard = () => {
   const [rents, setRents] = useState([])
   const [products, setProducts] = useState([]);
   const [machines, setMachines] = useState([]);
+  const [purchases, setPurchases] = useState([]);
+const [agents, setAgents] = useState([]);
 
+const navigate = useNavigate();
+
+
+const colorMap = {
+  earth: "bg-earth text-primary-foreground",
+  leaf: "bg-leaf text-primary-foreground",
+  sky: "bg-sky text-primary-foreground",
+  wheat: "bg-wheat text-foreground",
+  destructive: "bg-destructive text-destructive-foreground",
+};
+
+const statusColorMap = {
+  active: "bg-leaf/20 text-leaf border-leaf/30",
+  pending: "bg-wheat/20 text-wheat border-wheat/30",
+  not_bought: "bg-muted text-muted-foreground",
+  
+};
+const iconMap = {
+  soil: Leaf,
+  weather: Cloud,
+  disease: Bug,
+  irrigation: Droplets,
+  market: TrendingUp,
+  pest: Shield,
+};
+
+const agentColorMap = {
+  soil: "leaf",
+  weather: "sky",
+  disease: "destructive",
+  irrigation: "sky",
+  market: "wheat",
+  pest: "destructive",
+};
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -72,12 +108,38 @@ const FarmerDashboard = () => {
       const { data } = await axios.get(`${API_URL}/api/machines`);
       setMachines(data);
     };
+    const fetchAgents = async () => {
+  try {
+    const { data } = await axios.get(`${API_URL}/api/agents`);
+    setAgents(data);
+  } catch (error) {
+    console.log("Agents fetch error:", error);
+  }
+};
 
+    const fetchAgentPurchases = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const { data } = await axios.get(
+      `${API_URL}/api/agent-purchases/my`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    setPurchases(data);
+  } catch (err) {
+    console.log(err);
+  }
+};
     fetchUser();
     fetchOrders();
     fetchRentals();
     fetchProducts();
     fetchMachines();
+    fetchAgents();
+    fetchAgentPurchases();
   }, []);
 
 
@@ -104,9 +166,20 @@ const FarmerDashboard = () => {
   const availableMachines = machines
     .filter((machine) => machine.available)
     
-  const activeAgents = agents
-    .filter((agent) => agent.status === "active")
-    
+    const getAgentStatus = (type) => {
+  const found = purchases.find((p) => p.agentType === type);
+
+  if (!found) return "not_bought";
+  return found.status; // pending or active
+};
+
+const activeAgents = agents.filter(
+  (agent) => getAgentStatus(agent.type) === "active"
+);
+
+
+
+
 
   const quickStats = [
     {
@@ -344,21 +417,89 @@ const FarmerDashboard = () => {
                 <CardTitle>AI Agent Highlights</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {activeAgents.map((agent) => (
-                  <div key={agent.id} className="rounded-lg border p-3">
-                    <div className="flex items-center justify-between gap-3 mb-2">
-                      <p className="font-medium text-foreground">
-                        {agent.name}
-                      </p>
-                      <Badge className="bg-leaf text-primary-foreground">
-                        Buy
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {agent.description}
-                    </p>
-                  </div>
-                ))}
+                {agents.map((agent) => {
+  const status = getAgentStatus(agent.type);
+
+  const Icon = iconMap[agent.type] || Leaf;
+
+  const colorKey = agentColorMap[agent.type] || "leaf";
+  const colorClass = colorMap[colorKey];
+
+  const statusClass =
+    status === "active"
+      ? statusColorMap.active
+      : status === "pending"
+      ? statusColorMap.pending
+      : statusColorMap.not_bought;
+
+  return (
+    <div key={agent._id} className="rounded-lg border p-4 space-y-3">
+
+      {/* TOP */}
+      <div className="flex items-center justify-between">
+
+        <div className="flex items-center gap-3">
+          {/* ICON */}
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClass}`}>
+            <Icon className="w-5 h-5" />
+          </div>
+
+          <p className="font-medium text-foreground">
+            {agent.name}
+          </p>
+        </div>
+
+        {/* STATUS BADGE */}
+        <Badge className={statusClass}>
+          {status === "active"
+            ? "Active"
+            : status === "pending"
+            ? "Pending"
+            : "Buy"}
+        </Badge>
+      </div>
+
+      <p className="text-sm text-muted-foreground">
+        {agent.description}
+      </p>
+
+      {/* BUTTON */}
+      {status === "not_bought" && (
+        <Button
+          size="sm"
+          onClick={() =>
+            navigate("/checkout", {
+              state: {
+                agentType: agent.type,
+                agentName: agent.name,
+                price: agent.price,
+              },
+            })
+          }
+        >
+          Buy Sensor Kit
+        </Button>
+      )}
+
+      {status === "pending" && (
+        <Button size="sm" disabled>
+          Pending Setup
+        </Button>
+      )}
+
+      {status === "active" && (
+        <Button
+          size="sm"
+          onClick={() =>
+            window.open("https://agrisetu-dashboard.onrender.com", "_blank")
+          }
+        >
+          Open Dashboard
+        </Button>
+      )}
+    </div>
+  );
+})}
               </CardContent>
             </Card>
           </div>

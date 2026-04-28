@@ -8,6 +8,7 @@ export const getAllAgents = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+  
 };
 
 // GET /api/agents/:id  — public

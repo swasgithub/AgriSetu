@@ -56,8 +56,7 @@ const Consult = () => {
     const fetchAgents = async () => {
       try {
         const { data } = await axios.get(`${API_URL}/api/agents`);
-        console.log(API_URL)
-        console.log(data)
+        
         setAgents(data);
       } catch (error) {
         console.error("Failed to fetch agents:", error);
@@ -153,8 +152,8 @@ const Consult = () => {
                       >
                         <Icon className="w-6 h-6" />
                       </div>
-
-                      <Badge className={statusColorMap[agent.status]}>
+                    
+                      <Badge className="rounded-lg border p-3 h-4  bg-leaf text-primary-foreground ">
                         {agent.status}
                       </Badge>
                     </div>
@@ -204,7 +203,7 @@ const Consult = () => {
                         onClick={() => handleBuyAgent(agent)}
                       >
                         <ShoppingCart className="w-4 h-4 mr-2" />
-                        Buy Sensor Kit
+                        Buy 
                       </Button>
                     )}
                   </CardContent>

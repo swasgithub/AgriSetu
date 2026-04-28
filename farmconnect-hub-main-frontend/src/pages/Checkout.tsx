@@ -1,21 +1,60 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import { CreditCard, Truck, Wallet, CheckCircle2, ChevronLeft } from "lucide-react";
+import { CreditCard, Truck, Wallet, CheckCircle2, ChevronLeft, Icon } from "lucide-react";
+import { Leaf, Cloud, Bug, Droplets, TrendingUp, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+
 import { API_URL } from "@/config/api";
+const iconMap = {
+    soil: Leaf,
+    weather: Cloud,
+    disease: Bug,
+    irrigation: Droplets,
+    market: TrendingUp,
+    pest: Shield,
+};
+
+const colorMap: Record<string, string> = {
+  earth: "bg-earth text-primary-foreground",
+  leaf: "bg-leaf text-primary-foreground",
+  sky: "bg-sky text-primary-foreground",
+  wheat: "bg-wheat text-foreground",
+  destructive: "bg-destructive text-destructive-foreground",
+};
+
+
 const Checkout = () => {
+    
     const location = useLocation();
     const navigate = useNavigate();
     const { toast } = useToast();
-    const { items, totalAmount } = location.state || { items: [], totalAmount: 0 };
-    
-    const [paymentMethod, setPaymentMethod] = useState("cod");
-    const [isProcessing, setIsProcessing] = useState(false);
+    const state = location.state || {};
+
+    const isAgent = state.agentType;
+
+const Icon = isAgent ? iconMap[state.agentType] || Leaf : null;
+    const items = isAgent
+        ? [
+            {
+                name: state.agentName,
+                price: state.price,
+                quantity: 1,
+                image: "https://via.placeholder.com/80",
+            },
+        ]
+        : state.items || [];
+
+    const totalAmount = isAgent
+        ? Number(state.price || 0)
+        : Number(state.totalAmount || 0);
+
+ const colorKey = colorMap[state.agentType] || "leaf";
+const colorClass = colorMap[colorKey];
 
     if (items.length === 0) {
         return (
@@ -31,56 +70,82 @@ const Checkout = () => {
             </div>
         );
     }
+    const [paymentMethod, setPaymentMethod] = useState("cod");
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const handlePlaceOrder = async () => {
         setIsProcessing(true);
+
         try {
             const token = localStorage.getItem("token");
-            const orderData = {
-                items: items.map(item => ({
-                    product: item.product,
-                    quantity: item.quantity,
-                    price: item.price
-                })),
-                totalAmount,
-                paymentMethod
-            };
 
-            await axios.post(`${API_URL}/api/orders`, orderData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            if (isAgent) {
+                //  Agent Purchase API
+                await axios.post(
+                    `${API_URL}/api/agent-purchases`,
+                    {
+                        agentType: state.agentType,
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-            // Clear cart if we came from cart
-            localStorage.removeItem("cart");
+            } else {
+                // Normal Product Order
+                const orderData = {
+                    items: items.map((item) => ({
+                        product: item.product,
+                        quantity: item.quantity,
+                        price: item.price,
+                    })),
+                    totalAmount,
+                    paymentMethod,
+                };
+
+                await axios.post(`${API_URL}/api/orders`, orderData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            }
 
             toast({
-                title: "Order Placed!",
-                description: "Your order has been recorded successfully.",
+                title: "Success!",
+                description: isAgent
+                    ? "Agent purchased successfully"
+                    : "Order placed successfully",
             });
 
-            navigate("/order-success", { state: { items, totalAmount, paymentMethod } });
+            navigate("/order-success", {
+                state: {
+                    totalAmount,
+                },
+            });
+
         } catch (error) {
-            console.error("Order error:", error);
+            console.error("FULL ERROR:", error.response?.data || error.message);
+
             toast({
                 title: "Error",
-                description: "Failed to place order. Please try again.",
-                variant: "destructive"
+                description: error.response?.data?.message || "Something went wrong",
+                variant: "destructive",
             });
-        } finally {
+        }
+        finally {
             setIsProcessing(false);
         }
     };
-
     return (
         <div className="min-h-screen flex flex-col bg-muted/30">
             <Navbar />
-            
+
             <main className="flex-1 container mx-auto px-4 py-8">
-                <Button 
-                    variant="ghost" 
-                    className="mb-6 gap-2" 
+                <Button
+                    variant="ghost"
+                    className="mb-6 gap-2"
                     onClick={() => navigate(-1)}
                 >
                     <ChevronLeft className="w-4 h-4" />
@@ -95,15 +160,23 @@ const Checkout = () => {
                                 <CardTitle>Order Summary</CardTitle>
                             </CardHeader>
                             <CardContent className="divide-y">
+                                
                                 {items.map((item, idx) => (
                                     <div key={idx} className="py-4 flex gap-4">
+                                        {isAgent ? (
+                                            <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${colorClass}`}>
+                                                <Icon className="w-8 h-8 " />
+                                                
+                                            </div>
+                                        ) : (
                                         <div className="w-20 h-20 rounded-md bg-muted overflow-hidden shrink-0">
-                                            <img 
-                                                src={item.image || "https://via.placeholder.com/80"} 
-                                                alt={item.name} 
+                                            <img
+                                                src={item.image || "https://via.placeholder.com/80"}
+                                                alt={item.name}
                                                 className="w-full h-full object-cover"
                                             />
                                         </div>
+                                        )}
                                         <div className="flex-1">
                                             <h4 className="font-medium text-foreground">{item.name}</h4>
                                             <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
@@ -119,7 +192,7 @@ const Checkout = () => {
                                 <CardTitle>Payment Method</CardTitle>
                             </CardHeader>
                             <CardContent className="grid gap-4">
-                                <div 
+                                <div
                                     className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-transparent bg-card"}`}
                                     onClick={() => setPaymentMethod("cod")}
                                 >
@@ -135,7 +208,7 @@ const Checkout = () => {
                                     {paymentMethod === "cod" && <CheckCircle2 className="w-6 h-6 text-primary" />}
                                 </div>
 
-                                <div 
+                                <div
                                     className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === "upi" ? "border-primary bg-primary/5" : "border-transparent bg-card"}`}
                                     onClick={() => setPaymentMethod("upi")}
                                 >
@@ -151,7 +224,7 @@ const Checkout = () => {
                                     {paymentMethod === "upi" && <CheckCircle2 className="w-6 h-6 text-primary" />}
                                 </div>
 
-                                <div 
+                                <div
                                     className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === "card" ? "border-primary bg-primary/5" : "border-transparent bg-card"}`}
                                     onClick={() => setPaymentMethod("card")}
                                 >
@@ -189,15 +262,15 @@ const Checkout = () => {
                                     <span>Total Payable</span>
                                     <span className="text-primary">₹{totalAmount}</span>
                                 </div>
-                                
-                                <Button 
-                                    className="w-full mt-6 h-12 text-lg font-bold" 
+
+                                <Button
+                                    className="w-full mt-6 h-12 text-lg font-bold"
                                     onClick={handlePlaceOrder}
                                     disabled={isProcessing}
                                 >
                                     {isProcessing ? "Processing..." : "Place Order"}
                                 </Button>
-                                
+
                                 <p className="text-center text-xs text-muted-foreground mt-4">
                                     By placing this order, you agree to our Terms of Service and Privacy Policy.
                                 </p>

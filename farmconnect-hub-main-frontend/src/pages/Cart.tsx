@@ -33,7 +33,7 @@ const Cart = () => {
 
     //  Checkout
     const handleCheckout = () => {
-        navigate(`${API_URL}/checkout`, {
+        navigate(`/checkout`, {
             state: {
                 items: cart.map((item) => ({
                     product: item._id,
