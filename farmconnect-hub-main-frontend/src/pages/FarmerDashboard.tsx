@@ -103,10 +103,10 @@ const FarmerDashboard = () => {
   const featuredProducts = products.slice(0, 3);
   const availableMachines = machines
     .filter((machine) => machine.available)
-    .slice(0, 3);
+    
   const activeAgents = agents
     .filter((agent) => agent.status === "active")
-    .slice(0, 4);
+    
 
   const quickStats = [
     {
@@ -285,13 +285,13 @@ const FarmerDashboard = () => {
 
           {/* Lists */}
           <div className="grid gap-6 lg:grid-cols-3">
-            <Card>
+            <Card >
               <CardHeader>
                 <CardTitle>Suggested Products</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {featuredProducts.map((product) => (
-                  <Link to={`/product/${product._id}`} key={product._id}>
+                  <Link to={`/products/${product._id}`} key={product._id}>
                     <div className="rounded-lg border p-3 hover:shadow cursor-pointer">
                       <div className="flex items-center justify-between gap-4">
                         <div>
@@ -330,7 +330,7 @@ const FarmerDashboard = () => {
                           </p>
                         </div>
                         <Badge className="bg-secondary">
-                          Rs {machine.dailyRate}/day
+                          Rs {machine.pricePerDay}/day
                         </Badge>
                       </div>
                     </div>
@@ -351,7 +351,7 @@ const FarmerDashboard = () => {
                         {agent.name}
                       </p>
                       <Badge className="bg-leaf text-primary-foreground">
-                        Active
+                        Buy
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">

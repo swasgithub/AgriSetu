@@ -75,17 +75,17 @@ const Buy = () => {
 
   // BUY FUNCTION 
   const handleBuy = (product) => {
-    navigate("/checkout", { 
-      state: { 
-        items: [{ 
-          product: product._id, 
-          name: product.name, 
-          price: product.price, 
+    navigate("/checkout", {
+      state: {
+        items: [{
+          product: product._id,
+          name: product.name,
+          price: product.price,
           quantity: 1,
-          image: product.image 
+          image: product.image
         }],
-        totalAmount: product.price 
-      } 
+        totalAmount: product.price
+      }
     });
   };
 
@@ -156,6 +156,7 @@ const Buy = () => {
               <Card
                 key={product._id}
                 className="overflow-hidden hover:shadow-lg transition-shadow group"
+                onClick={() => navigate(`/products/${product._id}`)}
               >
                 {/* Image */}
                 <div className="aspect-video relative overflow-hidden bg-muted">
@@ -204,16 +205,15 @@ const Buy = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => addToCart(product)}
+                        onClick={(e) => { e.stopPropagation(); addToCart(product); }}
                       >
                         Add
                       </Button>
 
-                      {/* BUY */}
                       <Button
                         size="sm"
                         className="gap-1"
-                        onClick={() => handleBuy(product)}
+                        onClick={(e) => { e.stopPropagation(); handleBuy(product); }}
                       >
                         <Plus className="w-4 h-4" />
                         Buy

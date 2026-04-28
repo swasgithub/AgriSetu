@@ -22,7 +22,7 @@ import OrderSuccess from "./pages/OrderSuccess";
 import AddMachine from "./pages/AddMachine";
 import MyMachines from "./pages/MyMachines";
 import EditMachine from "./pages/EditMachine";
-
+import ProductDetails from "./pages/ProductDetails";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -50,6 +50,7 @@ const App = () => (
           <Route path="/add-machine" element={<AddMachine />} />
           <Route path="/my-machines" element={<MyMachines />} />
           <Route path="/edit-machine/:id" element={<EditMachine />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
