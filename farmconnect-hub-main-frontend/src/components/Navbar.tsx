@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation , useNavigate } from "react-router-dom";
 import { Menu, X, Sprout, ShoppingCart, Tractor, Bot, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -10,10 +10,11 @@ const Navbar = () => {
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
+    const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    navigate("/login");
   };
 
 
