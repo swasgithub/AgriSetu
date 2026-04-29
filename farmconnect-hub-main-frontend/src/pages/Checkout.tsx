@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-
+import { setAgentStatus } from "@/lib/agentStatus";
 import { API_URL } from "@/config/api";
 const iconMap = {
     soil: Leaf,
@@ -53,7 +53,7 @@ const Icon = isAgent ? iconMap[state.agentType] || Leaf : null;
         ? Number(state.price || 0)
         : Number(state.totalAmount || 0);
 
- const colorKey = colorMap[state.agentType] || "leaf";
+ const colorKey = colorMap[state.agentType] || "earth";
 const colorClass = colorMap[colorKey];
 
     if (items.length === 0) {
@@ -92,7 +92,8 @@ const colorClass = colorMap[colorKey];
                         },
                     }
                 );
-
+                 setAgentStatus(state.agentType, "pending");
+                
             } else {
                 // Normal Product Order
                 const orderData = {

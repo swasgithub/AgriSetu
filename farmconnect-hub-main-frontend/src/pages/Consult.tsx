@@ -11,7 +11,7 @@ import {
   ExternalLink,
   ShoppingCart,
 } from "lucide-react";
-
+import { getAgentStatus } from "@/lib/agentStatus";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +56,7 @@ const Consult = () => {
     const fetchAgents = async () => {
       try {
         const { data } = await axios.get(`${API_URL}/api/agents`);
-        
+
         setAgents(data);
       } catch (error) {
         console.error("Failed to fetch agents:", error);
@@ -67,29 +67,29 @@ const Consult = () => {
     fetchAgents();
   }, []);
 
-  //Fetch purchased agents
-  useEffect(() => {
-    const fetchPurchases = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+ //Fetch purchased agents
+ useEffect(() => {
+  const fetchPurchasedAgents = async () => {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`${API_URL}/api/agent-purchases/my`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-        const { data } = await axios.get(
-          `${API_URL}/api/agent-purchases/my`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+    const purchasedTypesList = res.data.map((p) => p.agentType); 
+    setPurchasedTypes(purchasedTypesList);
 
-        const types = data.map((p: any) => p.agentType);
-        setPurchasedTypes(types);
-      } catch (error) {
-        console.error("Failed to fetch purchases:", error);
+    // Sync localStorage with what DB actually says
+    ["soil", "weather", "pest"].forEach((type) => {
+      if (purchasedTypesList.includes(type)) {
+        localStorage.setItem(`agent_status_${type}`, "active");
+      } else {
+        localStorage.removeItem(`agent_status_${type}`);
       }
-    };
+    });
+  };
 
-    fetchPurchases();
-  }, []);
+  fetchPurchasedAgents();
+}, []);
 
   // Only show soil agent (as per your demo)
   const visibleAgents = agents
@@ -136,83 +136,91 @@ const Consult = () => {
       </section>
 
       {/* Main */}
-      <main className="flex-1 py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleAgents.map((agent) => {
-              const Icon = iconMap[agent.icon] || Leaf;
-              const isOwned = purchasedTypes.includes(agent.type);
+     <main className="flex-1 py-8">
+  <div className="container mx-auto px-4">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {visibleAgents.map((agent) => {
+        const status = getAgentStatus(agent.type); // "not_bought" | "pending" | "active"
+        const Icon = iconMap[agent.icon] || Leaf;
+        const isOwned = status !== "not_bought";
+        const isActive = status === "active";
 
-              return (
-                <Card key={agent._id} className="hover:shadow-lg transition">
-                  <CardHeader>
-                    <div className="flex justify-between">
-                      <div
-                        className={`w-12 h-12 flex items-center justify-center rounded ${colorMap[agent.color]}`}
-                      >
-                        <Icon className="w-6 h-6" />
-                      </div>
-                    
-                      <Badge className="rounded-lg border p-3 h-4  bg-leaf text-primary-foreground ">
-                        {agent.status}
-                      </Badge>
+        const badgeClass =
+          status === "active"
+            ? "bg-green-600 text-white"
+            : "bg-gray-200 text-gray-700";
+
+        const badgeLabel =
+          status === "active"
+            ? "Active"
+            : "Inactive";
+
+        return (
+          <Card key={agent._id} className="hover:shadow-lg transition">
+            <CardHeader>
+              <div className="flex justify-between">
+                <div
+                  className={`w-12 h-12 flex items-center justify-center rounded ${colorMap[agent.color]}`}
+                >
+                  <Icon className="w-6 h-6" />
+                </div>
+
+                {/* Badge now reads from localStorage status */}
+                <Badge className={`rounded-lg border p-3 h-4 ${badgeClass}`}>
+                  {badgeLabel}
+                </Badge>
+              </div>
+
+              <CardTitle>{agent.name}</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {agent.description}
+              </p>
+            </CardHeader>
+
+            <CardContent>
+              {/* Reading */}
+              {Object.keys(agent.lastReading || {}).length > 0 && (
+                <div className="bg-muted p-3 rounded mb-3 relative">
+                  {!isOwned && (
+                    <div className="absolute inset-0 bg-white/70 flex items-center justify-center text-sm">
+                      🔒 Buy to unlock data
                     </div>
-
-                    <CardTitle>{agent.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {agent.description}
-                    </p>
-                  </CardHeader>
-
-                  <CardContent>
-                    {/* Reading */}
-                    <div className="bg-muted p-3 rounded mb-3 relative">
-                      {!isOwned && (
-                        <div className="absolute inset-0 bg-white/70 flex items-center justify-center text-sm">
-                          🔒 Buy to unlock data
-                        </div>
-                      )}
-
-                      {Object.entries(agent.lastReading || {}).map(
-                        ([key, value]) => (
-                          <div key={key} className="flex justify-between text-sm">
-                            <span>{key}</span>
-                            <span>{String(value)}</span>
-                          </div>
-                        )
-                      )}
+                  )}
+                  {Object.entries(agent.lastReading || {}).map(([key, value]) => (
+                    <div key={key} className="flex justify-between text-sm">
+                      <span>{key}</span>
+                      <span>{String(value)}</span>
                     </div>
+                  ))}
+                </div>
+              )}
 
-                    {/* Price */}
-                    {!isOwned && (
-                      <p className="mb-2 font-bold">₹{agent.price}</p>
-                    )}
+              {/* Price — only show when not owned */}
+              {!isOwned && (
+                <p className="mb-2 font-bold">₹{agent.price}</p>
+              )}
 
-                    {/* Buttons */}
-                    {isOwned ? (
-                      <Button
-                        className="w-full"
-                        onClick={() => handleViewDashboard(agent)}
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        View Dashboard
-                      </Button>
-                    ) : (
-                      <Button
-                        className="w-full"
-                        onClick={() => handleBuyAgent(agent)}
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        Buy 
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </main>
+              {/* Button states */}
+              {status !== "active" && (
+                <Button className="w-full" onClick={() => handleBuyAgent(agent)}>
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Buy
+                </Button>
+              )}
+
+              {status === "active" && (
+                <Button className="w-full" onClick={() => handleViewDashboard(agent)}>
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  View Dashboard
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  </div>
+</main>
 
       <Footer />
     </div>
