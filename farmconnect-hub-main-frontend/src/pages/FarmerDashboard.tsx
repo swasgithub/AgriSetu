@@ -40,10 +40,9 @@ const FarmerDashboard = () => {
   };
 
   const statusColorMap = {
-    active: "bg-leaf/20 text-leaf border-leaf/30",
-    pending: "bg-wheat/20 text-wheat border-wheat/30",
-    not_bought: "bg-muted text-muted-foreground",
-
+    active: "bg-leaf/20 text-leaf border-leaf/30 hover:bg-leaf/30 hover:text-leaf",
+    pending: "bg-wheat/20 text-wheat border-wheat/30 hover:bg-wheat/30 hover:text-wheat",
+    not_bought: "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-muted-foreground",
   };
   const iconMap = {
     soil: Leaf,
