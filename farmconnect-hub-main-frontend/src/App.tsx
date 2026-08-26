@@ -26,6 +26,7 @@ import ProductDetails from "./pages/ProductDetails";
 import MachineDetails from "./pages/MachineDetails";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
+import { AdminAgents, AdminAnalytics, AdminOrders, AdminProducts, AdminRentals } from "./pages/AdminSections";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -50,6 +51,11 @@ const App = () => (
           <Route path="/dashboard/owner" element={<OwnerDashboard />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route path="/dashboard/admin/users" element={<AdminUsers />} />
+          <Route path="/dashboard/admin/products" element={<AdminProducts />} />
+          <Route path="/dashboard/admin/orders" element={<AdminOrders />} />
+          <Route path="/dashboard/admin/rentals" element={<AdminRentals />} />
+          <Route path="/dashboard/admin/analytics" element={<AdminAnalytics />} />
+          <Route path="/dashboard/admin/agents" element={<AdminAgents />} />
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/edit-product/:id" element={<EditProduct />} />

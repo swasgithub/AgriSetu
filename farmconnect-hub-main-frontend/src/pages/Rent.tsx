@@ -43,6 +43,14 @@ const Rent = () => {
   });
 
   const handleRentRequest = async (machine: any) => {
+    if (!localStorage.getItem("token") || !localStorage.getItem("user")) {
+      toast({
+        title: "Sign up or log in first",
+        description: "Please create an account or log in before requesting a machine rental.",
+      });
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
 
@@ -67,6 +75,11 @@ const Rent = () => {
 
     } catch (error: any) {
       console.log(error.response?.data || error.message);
+      toast({
+        title: "Rental request failed",
+        description: error.response?.data?.message || "Unable to send the rental request.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -120,7 +133,7 @@ const Rent = () => {
           {/* Machines Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMachines.map((machine) => (
-              <Card key={machine.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={machine._id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="aspect-video relative overflow-hidden bg-muted">
                   <img
                     src={machine.image}

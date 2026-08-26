@@ -63,7 +63,7 @@ const AdminSidebarLayout = ({ children }: { children: React.ReactNode }) => {
           bg-primary text-primary-foreground
           transition-transform duration-300
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 md:static md:z-auto
+          md:translate-x-0 md:static md:z-auto md:h-auto md:self-stretch
         `}
       >
         {/* Logo */}

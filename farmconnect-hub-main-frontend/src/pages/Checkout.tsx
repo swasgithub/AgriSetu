@@ -74,6 +74,13 @@ const colorClass = colorMap[colorKey];
     const [isProcessing, setIsProcessing] = useState(false);
 
     const handlePlaceOrder = async () => {
+        if (!localStorage.getItem("token") || !localStorage.getItem("user")) {
+            toast({
+                title: "Sign up or log in first",
+                description: "Please create an account or log in before placing an order.",
+            });
+            return;
+        }
         setIsProcessing(true);
 
         try {

@@ -34,6 +34,14 @@ const MachineDetails = () => {
   }, [id]);
 
   const handleRentRequest = async () => {
+    if (!localStorage.getItem("token") || !localStorage.getItem("user")) {
+      toast({
+        title: "Sign up or log in first",
+        description: "Please create an account or log in before requesting a machine rental.",
+      });
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
 

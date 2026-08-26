@@ -75,6 +75,10 @@ const Buy = () => {
 
   // BUY FUNCTION 
   const handleBuy = (product) => {
+    if (!localStorage.getItem("token") || !localStorage.getItem("user")) {
+      toast({ title: "Sign up or log in first", description: "Please create an account or log in before buying a product." });
+      return;
+    }
     navigate("/checkout", {
       state: {
         items: [{

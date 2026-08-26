@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useToast } from "@/hooks/use-toast";
 
 import { API_URL } from "@/config/api";
 import axios from "axios";
@@ -46,10 +47,12 @@ const statusColorMap: Record<string, string> = {
 
 const Consult = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [agents, setAgents] = useState<any[]>([]);
   const [purchasedTypes, setPurchasedTypes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   // fetch all agents
   useEffect(() => {
@@ -71,6 +74,12 @@ const Consult = () => {
  useEffect(() => {
   const fetchPurchasedAgents = async () => {
     const token = localStorage.getItem("token");
+    if (!token || !user) {
+      setPurchasedTypes([]);
+      return;
+    }
+
+    try {
     const res = await axios.get(`${API_URL}/api/agent-purchases/my`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -86,6 +95,10 @@ const Consult = () => {
         localStorage.removeItem(`agent_status_${type}`);
       }
     });
+    } catch (error) {
+      console.error("Failed to fetch purchased agents:", error);
+      setPurchasedTypes([]);
+    }
   };
 
   fetchPurchasedAgents();
@@ -96,6 +109,10 @@ const Consult = () => {
 
   // Buy button handler
   const handleBuyAgent = (agent: any) => {
+    if (!user || !localStorage.getItem("token")) {
+      toast({ title: "Sign up or log in first", description: "Please create an account or log in before buying a sensor kit." });
+      return;
+    }
     navigate("/agent-checkout", {
       state: {
         agentType: agent.type,
@@ -140,7 +157,7 @@ const Consult = () => {
   <div className="container mx-auto px-4">
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {visibleAgents.map((agent) => {
-        const status = getAgentStatus(agent.type); // "not_bought" | "pending" | "active"
+        const status = user ? getAgentStatus(agent.type) : "not_bought";
         const Icon = iconMap[agent.icon] || Leaf;
         const isOwned = status !== "not_bought";
         const isActive = status === "active";
