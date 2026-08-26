@@ -10,13 +10,13 @@ import { protect, authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Public
+// Public — anyone can view agents
 router.get("/", getAllAgents);
 router.get("/:id", getAgentById);
 
-
-router.post("/", createAgent);
-router.put("/:id", updateAgent);
-router.delete("/:id", deleteAgent);
+// Admin only — create, update, delete agents
+router.post("/", protect, authorize("admin"), createAgent);
+router.put("/:id", protect, authorize("admin"), updateAgent);
+router.delete("/:id", protect, authorize("admin"), deleteAgent);
 
 export default router;

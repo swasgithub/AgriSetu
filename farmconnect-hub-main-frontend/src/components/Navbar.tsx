@@ -35,6 +35,8 @@ const Navbar = () => {
         return "/dashboard/supplier";
       case "equipment_owner":
         return "/dashboard/owner";
+      case "admin":
+        return "/dashboard/admin";
       default:
         return null;
     }
@@ -141,8 +143,8 @@ const Navbar = () => {
               ))}
               {user ? (
                 <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-                  {user.role === "farmer" && (
-                    <Link to="/dashboard/farmer" onClick={() => setIsOpen(false)}>
+                  {dashboardPath && (
+                    <Link to={dashboardPath} onClick={() => setIsOpen(false)}>
                       <Button variant="outline" className="w-full gap-2">
                         <LayoutDashboard className="w-4 h-4" />
                         Dashboard

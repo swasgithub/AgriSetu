@@ -10,6 +10,7 @@ import machineRoutes from "./routes/machineRoutes.js";
 import rentRoutes from "./routes/rentRoutes.js";
 import agentRoutes from "./routes/agentRoutes.js";
 import agentPurchaseRoutes from "./routes/agentPurchaseRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use("/api/machines", machineRoutes);
 app.use("/api/rentals", rentRoutes);
 app.use("/api/agents", agentRoutes);
 app.use("/api/agent-purchases", agentPurchaseRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 
 app.use((err, req, res, next) => {

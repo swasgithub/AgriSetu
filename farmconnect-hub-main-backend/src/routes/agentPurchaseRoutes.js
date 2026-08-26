@@ -15,9 +15,9 @@ const router = express.Router();
 router.post("/", protect, buyAgent);
 router.get("/my", protect, getMyAgentPurchases);
 
-// Admin routes
-router.get("/all", getAllAgentPurchases);
-router.patch("/:id/activate",  activateAgent);
-router.delete("/:id", deleteAgentPurchase);
+// Admin routes (admin only)
+router.get("/all", protect, authorize("admin"), getAllAgentPurchases);
+router.patch("/:id/activate", protect, authorize("admin"), activateAgent);
+router.delete("/:id", protect, authorize("admin"), deleteAgentPurchase);
 
 export default router;

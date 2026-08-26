@@ -34,10 +34,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Our Services</h3>
             <ul className="space-y-2 text-primary-foreground/80">
-              <li>Soil Analysis</li>
-              <li>Weather Forecasting</li>
-              <li>Disease Detection</li>
-              <li>Market Prices</li>
+            <li><Link to="/consult">Soil Analysis</Link></li>
             </ul>
           </div>
 
@@ -55,14 +52,14 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-primary-foreground/80">
                 <MapPin className="w-4 h-4" />
-                <span>New Delhi, India</span>
+                <span>West Bengal, India</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-primary-foreground/60 text-sm">
-          <p>© 2025 AgriSetu. All rights reserved. | Smart India Hackathon 2025</p>
+          <p>© 2026 AgriSetu. All rights reserved. | Smart India Hackathon 2026</p>
         </div>
       </div>
     </footer>

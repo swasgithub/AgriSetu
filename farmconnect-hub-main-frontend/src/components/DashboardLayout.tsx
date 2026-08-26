@@ -7,7 +7,7 @@ const DashboardLayout = ({ title, description, user, children }) => {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      {/* HEADER (copied from your farmer dashboard) */}
+      
       <section className="bg-gradient-to-br from-leaf-light via-background to-wheat-light py-12">
         <div className="container mx-auto px-4">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">

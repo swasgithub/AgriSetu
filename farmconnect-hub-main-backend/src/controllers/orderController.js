@@ -87,3 +87,18 @@ export const updateOrderStatus = async (req, res) => {
 
   res.json(order);
 };
+
+// GET /api/orders/all — admin only
+// Returns every order on the platform with farmer info and product details
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("user", "name email phone village district role")
+      .populate("items.product", "name category price")
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

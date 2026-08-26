@@ -87,3 +87,20 @@ export const updateRentStatus = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// GET /api/rentals/all — admin only
+// Returns every rental on the platform with machine, renter, and owner details
+export const getAllRentals = async (req, res) => {
+  try {
+    const rentals = await Rent.find()
+      .populate("machine", "name type pricePerDay image")
+      .populate("user", "name email phone village district")
+      .populate("owner", "name email phone")
+      .sort({ createdAt: -1 });
+
+    res.json(rentals);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

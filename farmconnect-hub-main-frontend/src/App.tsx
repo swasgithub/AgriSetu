@@ -24,6 +24,8 @@ import MyMachines from "./pages/MyMachines";
 import EditMachine from "./pages/EditMachine";
 import ProductDetails from "./pages/ProductDetails";
 import MachineDetails from "./pages/MachineDetails";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/AdminUsers";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -46,6 +48,8 @@ const App = () => (
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
           <Route path="/dashboard/owner" element={<OwnerDashboard />} />
+          <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          <Route path="/dashboard/admin/users" element={<AdminUsers />} />
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/edit-product/:id" element={<EditProduct />} />
